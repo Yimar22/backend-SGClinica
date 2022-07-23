@@ -2,7 +2,6 @@ package net.andreanunez.encuestabackend.controllers;
 
 import javax.validation.Valid;
 
-import org.apache.catalina.authenticator.SpnegoAuthenticator.AuthenticateAction;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -16,7 +15,6 @@ import net.andreanunez.encuestabackend.entities.UserEntity;
 import net.andreanunez.encuestabackend.models.requests.UserRegisterRequestModel;
 import net.andreanunez.encuestabackend.models.responses.UserRest;
 import net.andreanunez.encuestabackend.services.UserService;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/users")
