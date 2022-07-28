@@ -9,4 +9,6 @@ import net.andreanunez.encuestabackend.entities.PollEntity;
 public interface PollRepository extends CrudRepository<PollEntity, Long> {
 
     public PollEntity findByPollId(String pollId);
+
+    public PollEntity findById(long id);
 }

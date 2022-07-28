@@ -26,12 +26,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import net.andreanunez.encuestabackend.entities.PollEntity;
+import net.andreanunez.encuestabackend.entities.UserEntity;
 import net.andreanunez.encuestabackend.models.requests.PollCreationRequestModel;
 import net.andreanunez.encuestabackend.models.requests.UserLoginRequestModel;
 import net.andreanunez.encuestabackend.models.requests.UserRegisterRequestModel;
+import net.andreanunez.encuestabackend.models.responses.PollRest;
 import net.andreanunez.encuestabackend.models.responses.ValidationErrors;
 import net.andreanunez.encuestabackend.repositories.PollRepository;
 import net.andreanunez.encuestabackend.repositories.UserRepository;
+import net.andreanunez.encuestabackend.services.PollService;
 import net.andreanunez.encuestabackend.services.UserService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -44,6 +47,7 @@ public class PollControllerTest {
     private static final String API_LOGIN_URL = "/users/login";
 
     private String token = "";
+    private UserEntity user = null;
     @Autowired
     TestRestTemplate testRestTemplate; // para poder enviar una petición
 
@@ -56,10 +60,13 @@ public class PollControllerTest {
     @Autowired
     PollRepository pollRepository;
 
+    @Autowired
+    PollService pollService;
+
     @BeforeAll
     public void initializeObjects() {
         UserRegisterRequestModel user = TestUtil.createValidUser();
-        userService.createUser(user);
+        this.user = userService.createUser(user);
         UserLoginRequestModel model = new UserLoginRequestModel();
         model.setEmail(user.getEmail());
         model.setPassword(user.getPassword());
@@ -284,6 +291,35 @@ public class PollControllerTest {
      * 
      * }
      */
+
+    @Test
+    public void getPollWithQuestions_cuandoLaEncuestaNoExisteEnLaBaseDeDatos_retornaInternalServerError() {
+
+        ResponseEntity<Object> responseEntity = getPollWithQuestions(API_URL + "/uuid/questions", Object.class);
+        assertEquals(responseEntity.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    public void getPollWithQuestions_cuandoLaEncuestaExisteEnLaBaseDeDatos_retornaOK() {
+        PollCreationRequestModel model = TestUtil.createValidPoll();
+        String uuid = pollService.createPoll(model, user.getEmail());
+        ResponseEntity<Object> responseEntity = getPollWithQuestions(API_URL + "/" + uuid + "/questions", Object.class);
+        assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
+    }
+
+    @Test
+    public void getPollWithQuestions_cuandoLaEncuestaExisteEnLaBaseDeDatos_retornaPollRest() {
+        PollCreationRequestModel model = TestUtil.createValidPoll();
+        String uuid = pollService.createPoll(model, user.getEmail());
+        ResponseEntity<PollRest> responseEntity = getPollWithQuestions(API_URL + "/" + uuid + "/questions",
+                PollRest.class);
+        assertEquals(uuid, responseEntity.getBody().getPollId());
+    }
+
+    public <T> ResponseEntity<T> getPollWithQuestions(String url, Class<T> responseType) {
+        return testRestTemplate.getForEntity(url, responseType);
+    }
+
     public <T> ResponseEntity<T> login(UserLoginRequestModel data, ParameterizedTypeReference<T> responseType) {
         HttpEntity<UserLoginRequestModel> entity = new HttpEntity<UserLoginRequestModel>(data, new HttpHeaders());
         return testRestTemplate.exchange(API_LOGIN_URL, HttpMethod.POST, entity, responseType);

@@ -60,4 +60,19 @@ public class PollServiceImpl implements PollService {
         return pollEntity.getPollId();
     }
 
+    @Override
+    public PollEntity getPoll(String pollId) {
+
+        PollEntity poll = pollRepository.findByPollId(pollId);
+        if (poll == null) {
+            throw new RuntimeException("Poll not found");
+        }
+        if (!poll.isOpened()) {
+            // la encuesta está cerrada
+            throw new RuntimeException("Poll does not accept more replies");
+        }
+        return poll;
+
+    }
+
 }
