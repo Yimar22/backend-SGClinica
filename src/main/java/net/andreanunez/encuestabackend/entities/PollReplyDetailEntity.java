@@ -27,6 +27,7 @@ public class PollReplyDetailEntity {
 
     private long questionId;
     private long answerId;
+    private String answerContent;
 
     // una poll reply puede tener muchas poll reply details
     @ManyToOne

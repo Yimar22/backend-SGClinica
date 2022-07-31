@@ -15,4 +15,7 @@ public class PollReplyDetailRequestModel {
     @NotNull
     @Positive
     private long answerId;
+
+    private String answerContent;
+
 }
