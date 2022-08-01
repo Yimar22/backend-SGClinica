@@ -34,7 +34,7 @@ public class PollReplyEntity {
     @CreatedDate
     private Date createdAt;
 
-    // Una encuesta puede tener muchas poll reply
+    // Muchas poll reply pueden estar en una encuesta
     @ManyToOne
     @JoinColumn(name = "poll_id")
     private PollEntity poll;

@@ -43,4 +43,8 @@ public class PollEntity {
     // una encuesta puede tener muchas preguntas
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "poll")
     private List<QuestionEntity> questions = new ArrayList<>();
+
+    // Una encuesta puede tener muchas poll reply
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "poll")
+    private List<PollReplyEntity> replies = new ArrayList<>();
 }

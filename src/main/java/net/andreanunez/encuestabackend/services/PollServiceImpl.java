@@ -2,8 +2,10 @@ package net.andreanunez.encuestabackend.services;
 
 import java.util.UUID;
 
-import org.apache.catalina.User;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import net.andreanunez.encuestabackend.entities.AnswerEntity;
@@ -73,6 +75,43 @@ public class PollServiceImpl implements PollService {
         }
         return poll;
 
+    }
+
+    @Override
+    public Page<PollEntity> getPolls(int page, int limit, String email) {
+        // 1.seleccionamos al usuario
+        UserEntity user = userRepository.findByEmail(email);
+        // 2.creamos a un objeto de tipo Pageable
+        Pageable pageable = PageRequest.of(page, limit);
+        // 3. Page va a ser de tipo PollEntity
+        Page<PollEntity> paginatedPolls = this.pollRepository.findAllByUserId(user.getId(), pageable);
+        return paginatedPolls;
+    }
+
+    @Override
+    public void togglePollOpened(String pollId, String email) {
+        UserEntity user = userRepository.findByEmail(email);
+
+        PollEntity poll = pollRepository.findByPollIdAndUserId(pollId, user.getId());
+
+        if (poll == null) {
+            throw new RuntimeException("Poll not found");
+        }
+        poll.setOpened(!poll.isOpened());
+
+        pollRepository.save(poll);
+    }
+
+    @Override
+    public void deletePoll(String pollId, String email) {
+        UserEntity user = userRepository.findByEmail(email);
+
+        PollEntity poll = pollRepository.findByPollIdAndUserId(pollId, user.getId());
+
+        if (poll == null) {
+            throw new RuntimeException("Poll not found");
+        }
+        pollRepository.delete(poll);
     }
 
 }
