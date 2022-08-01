@@ -1,5 +1,7 @@
 package net.andreanunez.encuestabackend.controllers;
 
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -15,11 +17,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.andreanunez.encuestabackend.entities.PollEntity;
+import net.andreanunez.encuestabackend.interfaces.PollResult;
 import net.andreanunez.encuestabackend.models.requests.PollCreationRequestModel;
 import net.andreanunez.encuestabackend.models.responses.CreatedPollRest;
 import net.andreanunez.encuestabackend.models.responses.PaginatedPollRest;
 import net.andreanunez.encuestabackend.models.responses.PollRest;
+import net.andreanunez.encuestabackend.models.responses.PollResultRest;
+import net.andreanunez.encuestabackend.models.responses.PollResultWrapperRest;
 import net.andreanunez.encuestabackend.services.PollService;
+import net.andreanunez.encuestabackend.utils.transformer.PollResultTransformer;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,7 +58,7 @@ public class PollController {
         return mapper.map(poll, PollRest.class);
     }
 
-    // traer todas las rutas de un determinado usuario
+    // traer todas las polls de un determinado usuario
     @GetMapping // polls?page=1&limit=10
     public PaginatedPollRest getPolls(@RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "limit", defaultValue = "10") int limit,
@@ -99,4 +105,15 @@ public class PollController {
         pollService.deletePoll(id, authentication.getPrincipal().toString());
     }
 
+    // endpoint para traernos los resultados
+    @GetMapping(path = "/{id}/results")
+    public PollResultWrapperRest getResults(@PathVariable String id, Authentication authentication) {
+        List<PollResult> results = pollService.getResults(id, authentication.getPrincipal().toString());
+
+        PollEntity poll = pollService.getPoll(id);
+
+        PollResultTransformer transformer = new PollResultTransformer();
+        return new PollResultWrapperRest(transformer.transformData(results), poll.getContent(), poll.getId());
+
+    }
 }

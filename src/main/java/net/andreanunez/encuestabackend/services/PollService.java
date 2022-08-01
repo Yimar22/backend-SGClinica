@@ -1,8 +1,11 @@
 package net.andreanunez.encuestabackend.services;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 
 import net.andreanunez.encuestabackend.entities.PollEntity;
+import net.andreanunez.encuestabackend.interfaces.PollResult;
 import net.andreanunez.encuestabackend.models.requests.PollCreationRequestModel;
 
 public interface PollService {
@@ -20,4 +23,5 @@ public interface PollService {
 
     public void deletePoll(String pollId, String email);
 
+    public List<PollResult> getResults(String pollId, String email);
 }

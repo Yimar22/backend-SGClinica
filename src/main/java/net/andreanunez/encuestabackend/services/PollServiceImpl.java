@@ -1,5 +1,6 @@
 package net.andreanunez.encuestabackend.services;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
@@ -12,6 +13,7 @@ import net.andreanunez.encuestabackend.entities.AnswerEntity;
 import net.andreanunez.encuestabackend.entities.PollEntity;
 import net.andreanunez.encuestabackend.entities.QuestionEntity;
 import net.andreanunez.encuestabackend.entities.UserEntity;
+import net.andreanunez.encuestabackend.interfaces.PollResult;
 import net.andreanunez.encuestabackend.models.requests.PollCreationRequestModel;
 import net.andreanunez.encuestabackend.repositories.PollRepository;
 import net.andreanunez.encuestabackend.repositories.UserRepository;
@@ -112,6 +114,18 @@ public class PollServiceImpl implements PollService {
             throw new RuntimeException("Poll not found");
         }
         pollRepository.delete(poll);
+    }
+
+    @Override
+    public List<PollResult> getResults(String pollId, String email) {
+        UserEntity user = userRepository.findByEmail(email);
+
+        PollEntity poll = pollRepository.findByPollIdAndUserId(pollId, user.getId());
+        if (poll == null) {
+            throw new RuntimeException("Poll not found");
+        }
+
+        return pollRepository.getPollResults(poll.getId());
     }
 
 }
