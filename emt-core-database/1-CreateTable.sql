@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.29, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.31, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: emt
+-- Host: emt.mysql.database.azure.com    Database: emt
 -- ------------------------------------------------------
--- Server version	8.0.29
+-- Server version	5.6.47.0
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -23,14 +23,14 @@ DROP TABLE IF EXISTS `clinical_history_format`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `clinical_history_format` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) DEFAULT 'N/A',
   `description` varchar(255) DEFAULT 'N/A',
   `enabled` tinyint(1) DEFAULT '1',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `payload` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,15 +43,11 @@ DROP TABLE IF EXISTS `patient`;
 CREATE TABLE `patient` (
   `id` varchar(255) NOT NULL,
   `creation_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `first_disease_code` varchar(45) DEFAULT 'N/A',
-  `second_disease_code` varchar(45) DEFAULT 'N/A',
-  `third_disease_code` varchar(45) DEFAULT 'N/A',
-  `fourth_disease_code` varchar(45) DEFAULT 'N/A',
   `nationality` varchar(45) DEFAULT 'N/A',
-  `migratory_state` int DEFAULT '3',
+  `migratory_state` int(11) DEFAULT '3',
   PRIMARY KEY (`id`),
   CONSTRAINT `FKpacient150320` FOREIGN KEY (`id`) REFERENCES `personal_information` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) /*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -67,8 +63,8 @@ CREATE TABLE `personal_information` (
   `last_name` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `dob` timestamp NULL DEFAULT NULL,
-  `gender` int DEFAULT NULL,
-  `civil_status` int DEFAULT NULL,
+  `gender` int(11) DEFAULT NULL,
+  `civil_status` int(11) DEFAULT NULL,
   `phone_number` varchar(255) DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -84,9 +80,10 @@ DROP TABLE IF EXISTS `role`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `role` (
   `name` varchar(45) NOT NULL,
+  `domain_name` varchar(45) DEFAULT 'N/A',
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) /*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -131,4 +128,4 @@ CREATE TABLE `user_role` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-11-07 15:42:01
+-- Dump completed on 2022-12-10 21:42:12

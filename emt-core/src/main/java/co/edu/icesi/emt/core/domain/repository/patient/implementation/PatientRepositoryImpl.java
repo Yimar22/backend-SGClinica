@@ -10,10 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import co.edu.icesi.emt.core.domain.model.disease.Disease;
 import co.edu.icesi.emt.core.domain.model.patient.Patient;
 import co.edu.icesi.emt.core.domain.model.patient.PatientPreview;
-import co.edu.icesi.emt.core.domain.model.patient.diseasehistorial.DiseaseHistorial;
 import co.edu.icesi.emt.core.domain.model.patient.nationality.MigratoryState;
 import co.edu.icesi.emt.core.domain.model.patient.nationality.NationalityState;
 import co.edu.icesi.emt.core.domain.repository.patient.PatientRepository;
@@ -26,27 +24,19 @@ public class PatientRepositoryImpl implements PatientRepository {
     private static final String ID = "id";
     private static final String CREATION_DATE = "creation_date";
 
-    private static final String FIRST_DISEASE_CODE = "first_disease_code";
-    private static final String SECOND_DISEASE_CODE = "second_disease_code";
-    private static final String THIRD_DISEASE_CODE = "third_disease_code";
-    private static final String FOURTH_DISEASE_CODE = "fourth_disease_code";
-
     private static final String NATIONALITY = "nationality";
     private static final String MIGRATORY_STATE = "migratory_state";
 
-    private static final String PATIENT_COLUMNS = ID + ", " + CREATION_DATE + ", " + FIRST_DISEASE_CODE + ", "
-            + SECOND_DISEASE_CODE
-            + ", " + THIRD_DISEASE_CODE + ", " + FOURTH_DISEASE_CODE + ", " + NATIONALITY + ", " + MIGRATORY_STATE;
+    private static final String PATIENT_COLUMNS = ID + ", " + CREATION_DATE + ", " + NATIONALITY + ", "
+            + MIGRATORY_STATE;
 
     private static final String SELECT_ALL = "SELECT " + PATIENT_COLUMNS + " FROM " + PATIENT_TABLE;
     private static final String SELECT_BY_ID = SELECT_ALL + " WHERE " + ID + " = ?";
 
     private static final String INSERT = "INSERT INTO " + PATIENT_TABLE + " (" + PATIENT_COLUMNS
-            + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            + ") VALUES (?, ?, ?, ?)";
 
-    private static final String UPDATE = "UPDATE " + PATIENT_TABLE + " SET " + FIRST_DISEASE_CODE + " = ?, "
-            + SECOND_DISEASE_CODE
-            + " = ?, " + THIRD_DISEASE_CODE + " = ?, " + FOURTH_DISEASE_CODE + " = ?, " + NATIONALITY + " = ?, "
+    private static final String UPDATE = "UPDATE " + PATIENT_TABLE + " SET " + NATIONALITY + " = ?, "
             + MIGRATORY_STATE + " = ? WHERE " + ID + " = ?";
 
     private static final String EXIST_BY_ID = "SELECT EXISTS(SELECT 1 FROM " + PATIENT_TABLE + " WHERE " + ID + " = ?)";
@@ -74,10 +64,6 @@ public class PatientRepositoryImpl implements PatientRepository {
             this.update(patient);
         } else {
             jdbcTemplate.update(INSERT, patient.getId(), patient.getCreationDate(),
-                    patient.getDiseaseHistorial().getFirstDisease().getCode(),
-                    patient.getDiseaseHistorial().getSecondDisease().getCode(),
-                    patient.getDiseaseHistorial().getThirdDisease().getCode(),
-                    patient.getDiseaseHistorial().getFourthDisease().getCode(),
                     patient.getNationalityState().getNationality(),
                     patient.getNationalityState().getMigratoryState().getId());
         }
@@ -85,16 +71,12 @@ public class PatientRepositoryImpl implements PatientRepository {
 
     @Override
     public void delete(String id) {
-        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void update(Patient patient) {
         jdbcTemplate.update(UPDATE,
-                patient.getDiseaseHistorial().getFirstDisease().getCode(),
-                patient.getDiseaseHistorial().getSecondDisease().getCode(),
-                patient.getDiseaseHistorial().getThirdDisease().getCode(),
-                patient.getDiseaseHistorial().getFourthDisease().getCode(),
                 patient.getNationalityState().getNationality(),
                 patient.getNationalityState().getMigratoryState().getId(),
                 patient.getId());
@@ -120,19 +102,6 @@ public class PatientRepositoryImpl implements PatientRepository {
         Instant creationDate = rs.getTimestamp(CREATION_DATE).toInstant();
 
         Patient patient = new Patient(id, creationDate);
-
-        String firstDiseaseCode = rs.getString(FIRST_DISEASE_CODE);
-        String secondDiseaseCode = rs.getString(SECOND_DISEASE_CODE);
-        String thirdDiseaseCode = rs.getString(THIRD_DISEASE_CODE);
-        String fourthDiseaseCode = rs.getString(FOURTH_DISEASE_CODE);
-
-        DiseaseHistorial diseaseHistorial = new DiseaseHistorial(
-                new Disease(firstDiseaseCode, firstDiseaseCode),
-                new Disease(secondDiseaseCode, secondDiseaseCode),
-                new Disease(thirdDiseaseCode, thirdDiseaseCode),
-                new Disease(fourthDiseaseCode, fourthDiseaseCode));
-
-        patient.setDiseaseHistorial(diseaseHistorial);
 
         String nationality = rs.getString(NATIONALITY);
         MigratoryState migratoryState = MigratoryState.byId(rs.getInt(MIGRATORY_STATE));
