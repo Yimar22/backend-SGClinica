@@ -40,10 +40,10 @@ jobs:
       - name: Build
         run: |
           cd emt-core
-	  npm run build --if-present
+          npm run build --if-present
 
       - name: Run tests
         run: |
-          cd emt-core 
+          cd emt-core
           npm test
 
