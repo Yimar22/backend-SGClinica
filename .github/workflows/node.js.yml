@@ -24,11 +24,8 @@ jobs:
           ${{ runner.os }}-build-${{ env.cache-name }}-
           ${{ runner.os }}-build-
           ${{ runner.os }}-
-    - run: pwd
     - run: cd emt-core
-    - run: pwd
-    - run: ls
-    - run: npm ci
+           npm ci
     - run: npm run build --if-present
     - name: Run tests
       run: npm test
