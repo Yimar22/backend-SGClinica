@@ -13,6 +13,15 @@ repositories {
 }
 
 dependencies {
+
+	testCompileOnly 'org.projectlombok:lombok:1.18.22'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+
+	testImplementation 'com.h2database:h2:2.1.214'
+
+	testImplementation 'org.everit.json:org.everit.json.schema:1.0.0'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
