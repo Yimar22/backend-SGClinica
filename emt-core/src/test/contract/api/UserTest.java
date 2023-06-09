@@ -20,16 +20,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @PactBroker(
         url = "${PACT_BROKER_BASE_URL}",
         authentication = @PactBrokerAuth(token = "${PACT_BROKER_TOKEN}") )
-        @ExtendWith(MockitoExtension.class)
+
+@ExtendWith(MockitoExtension.class)
 public class UserTest {
 
     // Declare controller and mocks
     @Mock
     private UserService userService;
 
+    // Inject controller in context
     @InjectMocks
     private UserController userController;
-    // Inject controller in context
 
     @BeforeEach
     public void changeContext(PactVerificationContext context) {
@@ -44,7 +45,16 @@ public class UserTest {
         context.verifyInteraction();
     }
 
-    @State("has users")
+    @State("there are users to register")
+    public void registerUser() {
+        User user = new User();
+        user.setFullName("Diego Torre");
+        user.setPassword("1234");
+        user.setUsername("DiegoTor");
+        Mockito.when(userService.save(Mockito.any(User.class))).thenReturn(user);
+    }
+
+    @State("there are users")
     public void listUsers() {
         User user = new User();
         user.setFullName("Diego Torre");
@@ -55,17 +65,30 @@ public class UserTest {
         Mockito.when(userService.getAll()).thenReturn(users);
     }
 
-    @State("has user to delete")
+    @State("there are user to delete")
     public void deleteUser() {
-        doNothing().when(userService).deleteUser(anyLong());
+        Mockito.doNothing().when(userService).delete(Mockito.any(String.class));
     }
 
-    @State("has user to update")
+    @State("there are users to get")
+    public void getUser() {
+        User user = new User();
+        user.setFullName("Diego Torre");
+        user.setPassword("1234");
+        user.setUsername("DiegoTor");
+        Mockito.when(userService.get(Mockito.any(String.class)))
+        .thenReturn(user);
+    }
+
+    @State("there are users to update")
     public void updateUser() {
         User user = new User();
         user.setFullName("Diego Torre");
         user.setPassword("1234");
         user.setUsername("DiegoTor");
-        when(userService.updateUser(any(String.class),any(String.class),any(String.class))).thenReturn(user);
+        Mockito.when(userService.replace(Mockito.any(String.class), 
+        Mockito.any(User.class))).thenReturn(user);
     }
+
+    
 }
